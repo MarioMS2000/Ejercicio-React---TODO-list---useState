@@ -1,76 +1,976 @@
-1- Comandos para la instalación:
+PASOS DEL PROYECTO - TODO LIST REACT
+====================================
 
-    npm create vite@latest todo-list-react -- --template react -> Genera automáticamente un proyecto React con Vite
-    cd todo-list-react -> Te mueves al proyecto recién creado
-    npm install -> Instala todo lo que Vite y React necesitan
-    npm install uuid -> Lo usaremos para generar IDs únicas en cada tarea
-    npm run dev -> Arranca la app en desarrollo
+Objetivo de estos apuntes
+-------------------------
 
-2-  Nada más crear el proyecto, haz una limpieza inicial:
+La idea es entender el proyecto como lo pensaria un desarrollador:
 
-        src/App.jsx
+1. Que necesita hacer la app.
+2. Que datos tiene que guardar.
+3. Que componentes hacen falta.
+4. Que componente tiene el estado principal.
+5. Que funciones modifican ese estado.
+6. Que props se pasan de padre a hijo.
+7. Que ocurre cuando el usuario hace click o escribe.
 
-            déjalo así:
 
-            function App() {
-            return <h1>TODO List</h1>;
-            }
+1. CREACION DEL PROYECTO
+------------------------
 
-            export default App;
-        
-        src/main.jsx
+Comandos iniciales:
 
-            déjalo como viene (normalmente ya está bien).
-        
-        src/index.css
+    npm create vite@latest todo-list-react -- --template react
+    cd todo-list-react
+    npm install
+    npm install uuid
+    npm run dev
 
-            puedes limpiarlo y dejar algo simple:
+Que hace cada comando:
 
-            body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            }
+- npm create vite@latest todo-list-react -- --template react
+  Crea un proyecto nuevo de React usando Vite.
 
-3- Crea la precarga de tareas:
+- cd todo-list-react
+  Entra dentro de la carpeta del proyecto.
 
-    Ahora crea el archivo:
+- npm install
+  Instala las dependencias necesarias.
 
-        src/data/todos.js
+- npm install uuid
+  Instala el paquete UUID para crear ids unicas para las tareas nuevas.
 
-    Esto será nuestra “base de datos” inicial.
+- npm run dev
+  Arranca la app en local para verla en el navegador.
 
-4- Conecta esos datos con App:
 
-        App.jsx
+2. LIMPIEZA INICIAL
+-------------------
 
-Y su responsabilidad será únicamente:
+Cuando Vite crea el proyecto, vienen archivos de ejemplo. Normalmente se limpian para empezar desde cero.
 
-importar el layout
-importar la app de tareas
-renderizar ambas
+Archivos importantes:
 
-5- Creamos TodoApp.jsx
-    Este componente va a ser el “cerebro” de la aplicación.
-    Primero vamos a construir solo su responsabilidad principal:
+- src/main.jsx
+- src/App.jsx
+- src/index.css
+- src/App.css
 
-        guardar tareas en estado
-        cargar tareas iniciales
-        pintarlas en pantalla
+src/main.jsx se suele dejar casi igual, porque es el punto de entrada de React.
 
-        Solo:
+src/App.jsx se limpia para empezar con algo simple:
 
-        crear estado
-        cargar datos
-        recorrer tareas
+    function App() {
+      return <h1>Todo List</h1>;
+    }
 
-        Mentalmente este componente hará esto:
+    export default App;
 
-        1. importar useState
-        2. importar datos iniciales
-        3. guardar datos en estado
-        4. recorrer tareas con map()
+src/index.css puede quedarse con estilos generales del body.
 
-6- Creamos components/List.jsx
+src/App.css se usa para los estilos concretos de la app.
 
-7 Creamos components/Item.jsx
+
+3. COMO PENSAR LA APP ANTES DE PROGRAMAR
+----------------------------------------
+
+Antes de crear componentes, hay que pensar:
+
+Que tiene que hacer esta TODO List?
+
+- Mostrar tareas iniciales desde un JSON.
+- Permitir escribir una tarea nueva.
+- Mostrar el boton ADD solo si hay texto.
+- Validar que la tarea tenga al menos 6 caracteres.
+- Anadir la tarea a la lista.
+- Limpiar el input al anadir.
+- Borrar una tarea concreta.
+- Borrar todas las tareas.
+- Restaurar las tareas iniciales.
+- Marcar una tarea como completada.
+- Editar una tarea existente.
+- Mostrar mensajes de error o exito.
+- Vaciar el input si pasan 20 segundos sin enviar.
+
+Que datos necesita guardar la app?
+
+- La lista de tareas.
+- El texto que se esta escribiendo en el input.
+- La tarea que se esta editando.
+- Mensajes de error.
+- Mensajes de exito.
+
+
+4. ESTRUCTURA DE CARPETAS
+-------------------------
+
+La estructura principal del proyecto es:
+
+    src/
+    |-- components/
+    |   |-- Button.jsx
+    |   |-- Form.jsx
+    |   |-- Item.jsx
+    |   |-- List.jsx
+    |
+    |-- data/
+    |   |-- tasks.json
+    |
+    |-- template/
+    |   |-- LayoutDefault.jsx
+    |
+    |-- App.jsx
+    |-- App.css
+    |-- index.css
+    |-- main.jsx
+
+
+5. QUE HACE CADA ARCHIVO
+------------------------
+
+src/main.jsx
+------------
+
+Es el punto de entrada de React.
+
+Aqui React busca el div con id "root" que esta en index.html y mete dentro la app.
+
+Resumen mental:
+
+    main.jsx llama a App.jsx
+
+Codigo importante:
+
+    createRoot(document.getElementById('root')).render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    )
+
+Esto significa:
+
+- Busca el elemento root del HTML.
+- Renderiza App dentro.
+- App pasa a ser el componente principal.
+
+
+src/App.jsx
+-----------
+
+Es el cerebro principal de la TODO List.
+
+Responsabilidades:
+
+- Guardar la lista de tareas en un useState.
+- Guardar que tarea se esta editando.
+- Cargar las tareas iniciales desde tasks.json.
+- Crear funciones para modificar las tareas.
+- Pasar datos y funciones a los componentes hijos.
+
+Estados principales:
+
+    const [tasks, setTasks] = useState([]);
+    const [taskToEdit, setTaskToEdit] = useState(null);
+
+Que significa:
+
+- tasks contiene todas las tareas.
+- setTasks actualiza la lista de tareas.
+- taskToEdit guarda la tarea que se esta editando.
+- setTaskToEdit cambia la tarea seleccionada para editar.
+
+Carga inicial con useEffect:
+
+    useEffect(() => {
+      setTasks(tasksData);
+    }, []);
+
+Esto significa:
+
+- Cuando App se monta por primera vez, carga las tareas del JSON.
+- El array [] hace que esto ocurra solo una vez.
+- Es como decir: "al iniciar la app, mete las tareas iniciales en el estado".
+
+
+src/data/tasks.json
+-------------------
+
+Es la precarga de datos.
+
+Funciona como una mini base de datos inicial.
+
+Ejemplo de tarea:
+
+    {
+      "_id": "1",
+      "title": "Estudiar React",
+      "desc": "Repasar useState",
+      "isDone": false
+    }
+
+Cada tarea tiene:
+
+- _id: identificador unico.
+- title: titulo de la tarea.
+- desc: descripcion.
+- isDone: dice si esta completada o no.
+
+
+src/components/Form.jsx
+-----------------------
+
+Es el formulario donde escribes una tarea nueva o editas una existente.
+
+Responsabilidades:
+
+- Guardar lo que se escribe en el input.
+- Mostrar o esconder el boton ADD.
+- Validar que el texto tenga minimo 6 caracteres.
+- Mostrar errores.
+- Mostrar mensaje de exito.
+- Limpiar el input despues de anadir o editar.
+- Rellenar el input si se esta editando una tarea.
+- Vaciar el input si pasan 20 segundos sin enviar.
+
+Estados internos:
+
+    const [title, setTitle] = useState("");
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+
+Que significa:
+
+- title guarda el texto del input.
+- error guarda el mensaje de error.
+- success guarda el mensaje de exito.
+
+Props que recibe Form:
+
+    const Form = ({ onAddTask, taskToEdit, onUpdateTask }) => { ... }
+
+Que recibe de App:
+
+- onAddTask: funcion para anadir tarea.
+- taskToEdit: tarea seleccionada para editar.
+- onUpdateTask: funcion para guardar cambios de una tarea editada.
+
+Importante:
+
+Form no modifica directamente la lista de tareas.
+Form avisa a App usando funciones que recibe por props.
+
+
+src/components/List.jsx
+-----------------------
+
+Es el componente que recorre la lista de tareas.
+
+Responsabilidad:
+
+- Recibir el array de tareas.
+- Hacer un map.
+- Pintar un Item por cada tarea.
+
+Props que recibe:
+
+    const List = ({ tasks, onDeleteTask, onToggleTask, onEditTask }) => { ... }
+
+Que significa:
+
+- tasks: array de tareas.
+- onDeleteTask: funcion para borrar una tarea.
+- onToggleTask: funcion para marcar una tarea como hecha/no hecha.
+- onEditTask: funcion para seleccionar una tarea y editarla.
+
+Codigo mental:
+
+    Por cada task dentro de tasks, crea un Item.
+
+Ejemplo:
+
+    {tasks.map((task) => (
+      <Item key={task._id} task={task} ... />
+    ))}
+
+
+src/components/Item.jsx
+-----------------------
+
+Es una tarea individual.
+
+Responsabilidades:
+
+- Mostrar el titulo de una tarea.
+- Pintarla tachada si esta completada.
+- Tener boton EDIT.
+- Tener boton DONE.
+- Tener boton DELETE.
+
+Props que recibe:
+
+    const Item = ({ task, onDeleteTask, onToggleTask, onEditTask }) => { ... }
+
+Que significa:
+
+- task: la tarea concreta que va a pintar.
+- onDeleteTask: funcion para borrar esa tarea.
+- onToggleTask: funcion para cambiar isDone.
+- onEditTask: funcion para editar esa tarea.
+
+Clase condicional:
+
+    className={task.isDone ? "item__title item__title--done" : "item__title"}
+
+Traduccion:
+
+- Si task.isDone es true, se aplica la clase de tachado.
+- Si task.isDone es false, se muestra normal.
+
+
+src/components/Button.jsx
+-------------------------
+
+Es un boton reutilizable.
+
+Sirve para no repetir la misma estructura de boton muchas veces.
+
+Recibe:
+
+    const Button = ({ text, onClick, type = "button" }) => { ... }
+
+Que significa:
+
+- text: texto que se vera dentro del boton.
+- onClick: funcion que se ejecuta al hacer click.
+- type: tipo del boton. Por defecto es "button".
+
+Cuando se usa dentro del formulario, se le pasa:
+
+    type="submit"
+
+Asi el boton envia el formulario.
+
+
+src/template/LayoutDefault.jsx
+------------------------------
+
+Es una plantilla general.
+
+Responsabilidad:
+
+- Pintar Header.
+- Pintar el contenido principal.
+- Pintar Footer.
+
+Usa children:
+
+    function LayoutDefault({ children }) {
+      return (
+        <div>
+          <header>
+            <Header />
+          </header>
+
+          <main>
+            {children}
+          </main>
+
+          <footer>
+            <Footer />
+          </footer>
+        </div>
+      );
+    }
+
+Que significa children?
+
+children es lo que metes dentro del componente cuando lo usas.
+
+En App se usa asi:
+
+    <LayoutDefault>
+      <main className="app">
+        ...
+      </main>
+    </LayoutDefault>
+
+Todo lo que esta dentro de LayoutDefault se convierte en children.
+
+
+src/App.css
+-----------
+
+Contiene los estilos principales de la app:
+
+- .app centra y ordena la aplicacion.
+- .app__title da estilo al titulo.
+- .app__actions coloca RESET y CLEAR.
+- .form ordena input y boton.
+- .form__input da estilo al input.
+- .error pinta errores en rojo.
+- .success pinta mensajes de exito en verde.
+- .list limpia el ul.
+- .item da estilo a cada tarea.
+- .item__title--done tacha una tarea completada.
+
+
+6. FLUJO GENERAL: QUE LLAMA A QUE
+---------------------------------
+
+Este es el flujo principal:
+
+    main.jsx
+       llama a
+    App.jsx
+       usa
+    LayoutDefault
+       dentro pinta
+    Form + botones RESET/CLEAR + List
+       List pinta muchos
+    Item
+
+Forma visual:
+
+    main.jsx
+      -> App.jsx
+          -> LayoutDefault
+              -> Header
+              -> contenido de App
+              -> Footer
+
+    App.jsx
+      -> Form.jsx
+      -> Button.jsx para RESET
+      -> Button.jsx para CLEAR
+      -> List.jsx
+          -> Item.jsx
+          -> Item.jsx
+          -> Item.jsx
+
+
+7. DONDE VIVE EL ESTADO
+-----------------------
+
+Regla importante:
+
+El estado principal de tareas vive en App.jsx.
+
+Por que?
+
+Porque muchas partes necesitan usar o modificar las tareas:
+
+- Form necesita anadir o editar.
+- List necesita mostrar todas.
+- Item necesita borrar, editar o marcar completada.
+- Los botones RESET y CLEAR necesitan cambiar toda la lista.
+
+Por eso App.jsx es el padre comun.
+
+App tiene el estado y pasa:
+
+- Datos hacia abajo.
+- Funciones hacia abajo.
+
+Esto se llama flujo de datos en React.
+
+Ejemplo:
+
+    <List
+      tasks={tasks}
+      onDeleteTask={deleteTask}
+      onToggleTask={toggleTask}
+      onEditTask={editTask}
+    />
+
+Traduccion:
+
+- App le da a List la lista de tareas.
+- App tambien le da funciones para que los hijos puedan pedir cambios.
+
+
+8. COMO SE ANADE UNA TAREA
+--------------------------
+
+Paso a paso:
+
+1. El usuario escribe en el input de Form.
+
+    onChange={(e) => setTitle(e.target.value)}
+
+2. Form guarda ese texto en su estado title.
+
+3. Si title tiene texto, aparece el boton ADD.
+
+    {title ? (<Button type="submit" text="ADD" />) : ""}
+
+4. El usuario pulsa ADD.
+
+5. Se ejecuta handleSubmit.
+
+6. handleSubmit evita que la pagina recargue.
+
+    e.preventDefault()
+
+7. Se valida que title tenga minimo 6 caracteres.
+
+8. Si hay error, se muestra el mensaje y se corta la funcion.
+
+9. Si todo esta bien, Form llama a:
+
+    onAddTask(title)
+
+10. onAddTask realmente es addTask, una funcion que viene de App.
+
+11. App crea un objeto nuevo:
+
+    const taskObject = {
+      _id: uuidv4(),
+      title: newTasks,
+      desc: "",
+      isDone: false,
+    };
+
+12. App actualiza el array:
+
+    setTasks([...tasks, taskObject]);
+
+13. React vuelve a pintar la pantalla.
+
+14. List recibe el nuevo array.
+
+15. List hace map otra vez.
+
+16. Aparece un nuevo Item.
+
+Resumen corto:
+
+    Form escribe -> Form valida -> Form llama a App -> App cambia tasks -> List se repinta -> aparece Item nuevo
+
+
+9. COMO SE BORRA UNA TAREA
+--------------------------
+
+Paso a paso:
+
+1. El usuario pulsa DELETE en un Item.
+
+2. Item ejecuta:
+
+    onClick={() => onDeleteTask(task._id)}
+
+3. onDeleteTask viene de App, pero ha pasado por List.
+
+4. App ejecuta deleteTask(id).
+
+5. deleteTask usa filter:
+
+    const newTask = tasks.filter((task) => {
+      if (task._id !== id) {
+        return true;
+      }
+      return false;
+    });
+
+6. filter crea un nuevo array sin la tarea eliminada.
+
+7. App actualiza el estado:
+
+    setTasks(newTask);
+
+8. React repinta la lista.
+
+Resumen corto:
+
+    Item pide borrar -> App filtra tasks -> se actualiza la lista
+
+
+10. COMO SE BORRAN TODAS LAS TAREAS
+-----------------------------------
+
+El boton CLEAR esta en App:
+
+    <Button text="CLEAR" onClick={clearTasks} />
+
+Cuando se pulsa:
+
+    const clearTasks = () => {
+      setTasks([]);
+    }
+
+Esto deja el array de tareas vacio.
+
+Resumen:
+
+    CLEAR -> setTasks([]) -> lista vacia
+
+
+11. COMO FUNCIONA RESET
+-----------------------
+
+El boton RESET esta en App:
+
+    <Button text="RESET" onClick={resetTasks} />
+
+Cuando se pulsa:
+
+    const resetTasks = () => {
+      setTasks(tasksData);
+    }
+
+Esto vuelve a poner las tareas originales del JSON.
+
+Importante:
+
+RESET no recupera las tareas nuevas que hayas anadido.
+RESET deja solo las tareas iniciales.
+
+Resumen:
+
+    RESET -> setTasks(tasksData) -> vuelven las tareas del JSON
+
+
+12. COMO SE MARCA UNA TAREA COMO COMPLETADA
+-------------------------------------------
+
+Paso a paso:
+
+1. El usuario pulsa DONE en un Item.
+
+2. Item llama a:
+
+    onToggleTask(task._id)
+
+3. App ejecuta toggleTask(id).
+
+4. toggleTask recorre todas las tareas con map.
+
+5. Si encuentra la tarea con ese id, cambia isDone al contrario.
+
+    isDone: !task.isDone
+
+6. Si estaba false, pasa a true.
+
+7. Si estaba true, pasa a false.
+
+8. React repinta.
+
+9. Item aplica la clase de tachado si isDone es true.
+
+Resumen:
+
+    DONE -> App cambia isDone -> Item se pinta tachado
+
+
+13. COMO SE EDITA UNA TAREA
+---------------------------
+
+Editar tiene dos partes:
+
+- Seleccionar la tarea.
+- Guardar el cambio.
+
+Parte 1: seleccionar
+
+1. El usuario pulsa EDIT en un Item.
+
+2. Item llama a:
+
+    onEditTask(task._id)
+
+3. App ejecuta editTask(id).
+
+4. editTask busca la tarea con find:
+
+    const selectedTask = tasks.find((task) => task._id === id);
+
+5. App guarda esa tarea en taskToEdit:
+
+    setTaskToEdit(selectedTask);
+
+6. App pasa taskToEdit a Form:
+
+    <Form taskToEdit={taskToEdit} ... />
+
+7. Form detecta que hay una tarea para editar:
+
+    useEffect(() => {
+      if (!taskToEdit) return;
+      setTitle(taskToEdit.title);
+    }, [taskToEdit]);
+
+8. El input se rellena con el titulo de esa tarea.
+
+Parte 2: guardar
+
+1. El usuario cambia el texto.
+
+2. Pulsa EDIT.
+
+3. Form ejecuta handleSubmit.
+
+4. Como taskToEdit existe, no anade una tarea nueva. Llama a:
+
+    onUpdateTask(taskToEdit._id, title);
+
+5. App ejecuta updateTask(id, title).
+
+6. updateTask usa map para encontrar esa tarea y cambiar solo el title.
+
+7. App hace:
+
+    setTaskToEdit(null);
+
+8. Esto vuelve al modo normal de anadir tarea.
+
+Resumen:
+
+    EDIT en Item -> App guarda taskToEdit -> Form rellena input -> usuario cambia -> Form llama update -> App actualiza tasks
+
+
+14. COMO FUNCIONAN LOS MENSAJES
+-------------------------------
+
+Error:
+
+Si el texto tiene menos de 6 caracteres:
+
+    if (title.length < 6) {
+      setError("La tarea debe tener al menos 6 caracteres");
+      return;
+    }
+
+El return corta la funcion.
+La tarea no se anade ni se edita.
+
+Exito:
+
+Cuando se anade o edita una tarea:
+
+    setSuccess("La tarea fue anadida con exito");
+
+o:
+
+    setSuccess("La tarea fue editada con exito");
+
+Despues un useEffect borra el mensaje a los 5 segundos:
+
+    useEffect(() => {
+      if (!success) return;
+
+      const timer = setTimeout(() => {
+        setSuccess("");
+      }, 5000);
+
+      return () => {
+        clearTimeout(timer);
+      }
+    }, [success]);
+
+
+15. COMO FUNCIONA EL TEMPORIZADOR DE 20 SEGUNDOS
+------------------------------------------------
+
+En Form hay un useEffect que observa title.
+
+Si el usuario escribe algo, se crea un temporizador:
+
+    const timer = setTimeout(() => {
+      setTitle("");
+    }, 20000);
+
+Eso significa:
+
+- Si pasan 20 segundos sin enviar, el input se vacia.
+- Al vaciarse el input, desaparece el boton ADD.
+
+Tambien hay limpieza:
+
+    return () => {
+      clearTimeout(timer);
+    }
+
+Esto es importante porque si el usuario sigue escribiendo, React cancela el temporizador anterior y crea uno nuevo.
+
+Resumen:
+
+    escribes -> empieza contador de 20s -> si no envias, se limpia input
+
+
+16. MAP, FILTER Y FIND EN ESTE PROYECTO
+---------------------------------------
+
+map:
+
+Se usa cuando quieres recorrer un array y devolver otro array.
+
+En List:
+
+    tasks.map(...)
+
+Sirve para pintar un Item por cada tarea.
+
+En updateTask y toggleTask:
+
+    tasks.map(...)
+
+Sirve para modificar una tarea concreta y dejar las demas igual.
+
+
+filter:
+
+Se usa para eliminar elementos de un array.
+
+En deleteTask:
+
+    tasks.filter(...)
+
+Devuelve todas las tareas menos la que quiero borrar.
+
+
+find:
+
+Se usa para encontrar un solo elemento.
+
+En editTask:
+
+    tasks.find(...)
+
+Devuelve la tarea que quiero editar.
+
+
+17. PROPS: COMO VIAJAN LOS DATOS
+--------------------------------
+
+En React, las props son informacion que un componente padre pasa a un componente hijo.
+
+En este proyecto:
+
+App pasa cosas a Form:
+
+    <Form
+      onAddTask={addTask}
+      taskToEdit={taskToEdit}
+      onUpdateTask={updateTask}
+    />
+
+App pasa cosas a List:
+
+    <List
+      tasks={tasks}
+      onDeleteTask={deleteTask}
+      onToggleTask={toggleTask}
+      onEditTask={editTask}
+    />
+
+List pasa cosas a Item:
+
+    <Item
+      key={task._id}
+      task={task}
+      onDeleteTask={onDeleteTask}
+      onToggleTask={onToggleTask}
+      onEditTask={onEditTask}
+    />
+
+Idea clave:
+
+- Los datos bajan: App -> List -> Item.
+- Las acciones suben usando funciones: Item -> funcion recibida -> App cambia estado.
+
+
+18. ORDEN RECOMENDADO PARA CREAR EL PROYECTO
+--------------------------------------------
+
+Si lo hiciera un desarrollador paso a paso, podria seguir este orden:
+
+1. Crear proyecto con Vite.
+2. Limpiar archivos iniciales.
+3. Crear tasks.json con tareas de prueba.
+4. En App, importar tasks.json.
+5. Crear estado tasks con useState([]).
+6. Cargar tasksData con useEffect.
+7. Pintar tareas directamente en App para comprobar que funciona.
+8. Crear componente List.
+9. Pasar tasks a List por props.
+10. Crear componente Item.
+11. Hacer que List pinte Item con map.
+12. Crear componente Form.
+13. Crear estado title en Form.
+14. Controlar el input con value y onChange.
+15. Crear addTask en App.
+16. Pasar addTask a Form como onAddTask.
+17. Validar minimo 6 caracteres.
+18. Crear mensaje de error.
+19. Crear mensaje de exito.
+20. Crear temporizador de 5 segundos para ocultar exito.
+21. Crear temporizador de 20 segundos para limpiar input.
+22. Crear deleteTask en App.
+23. Pasar deleteTask hasta Item.
+24. Crear boton DELETE.
+25. Crear clearTasks en App.
+26. Crear boton CLEAR.
+27. Crear resetTasks en App.
+28. Crear boton RESET.
+29. Crear toggleTask en App.
+30. Crear boton DONE.
+31. Anadir clase CSS para tachar completadas.
+32. Crear estado taskToEdit en App.
+33. Crear editTask en App.
+34. Pasar editTask hasta Item.
+35. Crear boton EDIT.
+36. Pasar taskToEdit a Form.
+37. Rellenar input con useEffect cuando se edita.
+38. Crear updateTask en App.
+39. Pasar updateTask a Form.
+40. Cambiar boton ADD por EDIT si hay taskToEdit.
+41. Crear estilos CSS.
+42. Probar todos los casos.
+43. Ejecutar npm run build.
+44. Subir a GitHub.
+45. Desplegar en Netlify.
+
+
+19. RESUMEN RAPIDO DEL PROYECTO
+-------------------------------
+
+El proyecto funciona asi:
+
+    main.jsx arranca React.
+    App.jsx controla las tareas.
+    tasks.json aporta las tareas iniciales.
+    Form.jsx permite anadir o editar.
+    List.jsx recorre las tareas.
+    Item.jsx pinta cada tarea.
+    Button.jsx reutiliza botones.
+    App.css da estilos.
+
+La clave del proyecto es esta:
+
+    App tiene el estado.
+    Los hijos muestran datos.
+    Los hijos avisan a App con funciones.
+    App actualiza el estado.
+    React repinta la pantalla.
+
+
+20. CHECKLIST PARA SABER SI LO ENTIENDES
+----------------------------------------
+
+Preguntas que deberias poder responder:
+
+- Donde esta guardada la lista de tareas?
+- Por que tasks vive en App y no en Item?
+- Que hace useEffect al cargar la app?
+- Que diferencia hay entre ADD y EDIT?
+- Por que se usa map en List?
+- Por que se usa filter para borrar?
+- Por que se usa find para editar?
+- Como llega deleteTask desde App hasta Item?
+- Que pasa cuando pulsas DONE?
+- Que pasa cuando pulsas RESET?
+- Que pasa cuando pulsas CLEAR?
+- Por que el boton ADD desaparece?
+- Donde se valida que haya minimo 6 caracteres?
+- Que hace UUID en este proyecto?
+
+Si puedes explicar esas preguntas, entiendes el proyecto.
