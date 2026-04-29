@@ -1,14 +1,14 @@
 [
     {
-        "id": "1",
-        "text": "Aprender useState"
+        "_id": "1",
+        "title": "Estudiar React",
+        "desc": "Repasar useState",
+        "isDone": false
     },
     {
-        "id": "2",
-        "text": "Practicar formularios"
-    },
-    {
-        "id": "3",
-        "text": "Crear una todo list"
+        "_id": "2",
+        "title": "Hacer ejercicios",
+        "desc": "Practicar componentes",
+        "isDone": false
     }
 ]
