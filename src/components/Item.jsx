@@ -1,9 +1,15 @@
 // pintar una tarea
-const Item = ({ task, onDeleteTask }) => {
+const Item = ({ task, onDeleteTask, onToggleTask }) => {
 
     return (
         <li className="item">
-            <span className="item__title">{task.title}</span>
+            <span className={task.isDone ? "item__title item__title--done" : "item__title"}>{task.title}</span> {/* Qué clases CSS poner según si la tarea está hecha o no (IMPORTANTE: el ternario siempre es -> condición ? valorSiTrue : valorSiFalse). 
+            Si NO está hecha usar solo: item__title  y si esta hecha usar item__title item__title--done -> O sea, la clase base más una clase extra de “completada”*/}
+            <button
+                className="item__toggle"
+                onClick={() => onToggleTask(task._id)} >{/*Botón de cambiar tarea a completada */}
+                DONE
+            </button>
             <button
                 className="item__delete"
                 onClick={() => onDeleteTask(task._id)} >

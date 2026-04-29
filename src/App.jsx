@@ -52,12 +52,26 @@ const App = () => {
       return false;
 
     });
-    setTasks(newTask); // Aquí remplazamos el array viejo por el nuevo
+    setTasks(newTask); // Aquí remplazamos el objeto viejo por el nuevo
   }
 
   // Para limpiar toda la lista
   const clearTasks = () => {
     setTasks([]);
+  }
+
+  // Para actualizar una tarea concreta
+  const toggleTask = (id) => {
+    const updatedTasks = tasks.map((task) => {
+      if(task._id === id) {
+        return {
+          ...task, isDone : !task.isDone
+        };// ...tasks -> Esto copia toda la tarea, crea una copia igual de el .jsone | Después de copiarla, sobrescribes solo isDone | !task.isDone y metemos lo contrario, si era True ahora false y al revés
+      }
+      // si no
+      return task; // lo devolvemos tal cual estaba
+    });
+    setTasks(updatedTasks); // // Aquí remplazamos el objeto viejo por el nuevo
   }
 
   // RETURN
@@ -70,7 +84,7 @@ const App = () => {
           <Button text="RESET" onClick={resetTasks} />
           <Button text="CLEAR" onClick={clearTasks} />
         </div>
-        <List tasks={tasks} onDeleteTask={deleteTask} />{/*El botón DELETE debe estar dentro de cada Item, porque cada Item sí conoce su tarea por eso no se pone un boton button, porque deleteTask necesita recibir un id */}
+        <List tasks={tasks} onDeleteTask={deleteTask} onToggleTask={toggleTask} />{/*El botón DELETE debe estar dentro de cada Item, porque cada Item sí conoce su tarea por eso no se pone un boton button, porque deleteTask necesita recibir un id */}
       </main>
     </LayoutDefault>
   );

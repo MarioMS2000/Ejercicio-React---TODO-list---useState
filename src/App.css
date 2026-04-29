@@ -76,3 +76,9 @@ button{
   border-radius: 8px;
   margin-bottom: 0.75rem;
 }
+
+/*Clase de tachado al marcar tarea como completada cuando pulse el botón DONE*/
+.item__title--done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
