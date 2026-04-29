@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react' // sirve para traer (importar) el ho
 
 import Button from "./Button";
 
-const Form = ({ onAddTask }) => {
+const Form = ({ onAddTask, taskToEdit, onUpdateTask }) => {
 
     const [title, setTitle] = useState(""); // creamos el estado inicial a vacío con useState("")
     const [error, setError] = useState("");
@@ -26,16 +26,22 @@ const Form = ({ onAddTask }) => {
 
     // useEffect al añadir la tarea se borra despues de 5s el mensaje
     useEffect(() => {
-        if(!success) return; // si no hay mensaje de éxito, no hagas nada
+        if (!success) return; // si no hay mensaje de éxito, no hagas nada
         // pero si hay haz al añadir la tarea se borra despues de 5s el mensaje
         const timer = setTimeout(() => {
             setSuccess("");
-        },5000);
+        }, 5000);
 
         return () => {
             clearTimeout(timer);
         }
-    },[success]);
+    }, [success]);
+
+    // useEffect si hay tarea meter titulo en su input
+    useEffect(() => {
+        if (!taskToEdit) return;
+        setTitle(taskToEdit.title); // pon en el input el título de la tarea seleccionada. Tu nuevo valor ahora es el título de la tarea que estoy editando.
+    }, [taskToEdit]); // la tarea que he seleccionado para edita
 
     const handleSubmit = (e) => {
         e.preventDefault() // para evitar recargar la página web
@@ -43,6 +49,12 @@ const Form = ({ onAddTask }) => {
         if (title.length < 6) {
             setError("La tarea debe tener al menos 6 caracteres");
             return;
+        }
+
+        if(taskToEdit){
+            onUpdateTask();
+        }else {
+            onAddTask(title);
         }
         // Si no, continua con la tarea
         setError("");

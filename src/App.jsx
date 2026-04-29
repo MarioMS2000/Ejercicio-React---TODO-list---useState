@@ -17,7 +17,10 @@ const App = () => {
 
   // HOOKS 
   // useState -> guarda datos | useEffect -> ejecuta acciones cuando React ya ha renderizado
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState([]); // Guarda la lista completa de tareas
+
+  //Estado, de EDIT -> Guarda una sola tarea concreta que estás editando ahora
+  const [taskToEdit, setTaskToEdit] = useState(null); // null -> Porque al principio no estás editando ninguna tarea
 
   // useEffect -> Cuando el componente ya se haya pintado, ejecuta esto
   useEffect(() => {
@@ -71,7 +74,26 @@ const App = () => {
       // si no
       return task; // lo devolvemos tal cual estaba
     });
-    setTasks(updatedTasks); // // Aquí remplazamos el objeto viejo por el nuevo
+    setTasks(updatedTasks); // Aquí remplazamos el objeto viejo por el nuevo
+  }
+
+  //Para editar una tarea concreta
+  const editTask = (id) => {
+    const selectedTask = tasks.find((task) => task._id === id);// Este es como el filter pero el find si encuentra uno te da true y lo devuelve
+    setTaskToEdit(selectedTask);// Lo cambia
+  }
+
+  // Cambiar el título de la tarea editada
+  const updateTask = (id, title) => {
+    const updatedTasks = tasks.map((task) =>{
+      if(task._id === id) {
+        return {
+          ...task, title :  title
+        };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
   }
 
   // RETURN
@@ -79,12 +101,18 @@ const App = () => {
     <LayoutDefault>
       <main className="app">
         <h1 className="app__title">Todo List</h1>
-        <Form onAddTask={addTask} /> {/*Se lee como: <Componente nombreProp={valorQueLePaso} /> */}
+        {/*onAddTask={addTask} -> pasamos función porque Form necesita poder decir cuando envíen el formulario, añade esta tarea.
+            Eso es una acción. No es información para mostrar. Es algo que Form tiene que ejecutar. Por eso recibe una función. 
+          taskToEdit={taskToEdit} pasamos un dato porque Form necesita saber qué tarea estoy editando ahora para mostrarla en el input.
+          Eso no es una acción. Es información que Form necesita leer y pintar. Por eso recibe estado.
+          Si el hijo necesita hacer algo → le pasas una función y si tiene que mostrar algo → le pasas un dato (estado)
+          */}
+        <Form onAddTask={addTask} taskToEdit={taskToEdit} onUpdateTask={updateTask}/> {/*Se lee como: <Componente nombreProp={valorQueLePaso} /> */}
         <div className="app__actions">
           <Button text="RESET" onClick={resetTasks} />
           <Button text="CLEAR" onClick={clearTasks} />
         </div>
-        <List tasks={tasks} onDeleteTask={deleteTask} onToggleTask={toggleTask} />{/*El botón DELETE debe estar dentro de cada Item, porque cada Item sí conoce su tarea por eso no se pone un boton button, porque deleteTask necesita recibir un id */}
+        <List tasks={tasks} onDeleteTask={deleteTask} onToggleTask={toggleTask} onEditTask={editTask} />{/*El botón DELETE debe estar dentro de cada Item, porque cada Item sí conoce su tarea por eso no se pone un boton button, porque deleteTask necesita recibir un id */}
       </main>
     </LayoutDefault>
   );
