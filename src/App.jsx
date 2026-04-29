@@ -37,7 +37,7 @@ const App = () => {
       desc: "",
       isDone: false,
     };
-    setTasks([...tasks, taskObject])
+    setTasks([...tasks, taskObject]);
   };
 
   // Para resetear la lista y dejar solo los del jsone
@@ -94,6 +94,7 @@ const App = () => {
       return task;
     });
     setTasks(updatedTasks);
+    setTaskToEdit(null); // vuelve al modo añadir tarea nueva
   }
 
   // RETURN

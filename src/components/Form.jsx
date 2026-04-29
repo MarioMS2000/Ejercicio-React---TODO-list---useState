@@ -50,20 +50,18 @@ const Form = ({ onAddTask, taskToEdit, onUpdateTask }) => {
             setError("La tarea debe tener al menos 6 caracteres");
             return;
         }
-
-        if(taskToEdit){
-            onUpdateTask();
-        }else {
-            onAddTask(title);
-        }
         // Si no, continua con la tarea
-        setError("");
+        setError("");// Limpiar error
 
-        onAddTask(title); // llama a la función onAddTask y mándale el valor de title
+        if (taskToEdit) {
+            onUpdateTask(taskToEdit._id, title);
+            setSuccess("La tarea fue editada con éxito");
+        } else {
+            onAddTask(title); // llama a la función onAddTask y mándale el valor de title
+            setSuccess("La tarea fue añadida con éxito");
+        }
 
         setTitle(""); // React actualiza title a vacío y el input se limpia automáticamente
-
-        setSuccess("La tarea fue añadida con éxito");
     }
 
     return (
@@ -80,8 +78,7 @@ const Form = ({ onAddTask, taskToEdit, onUpdateTask }) => {
                 {error ? <p className='error'>{error}</p> : ""}
                 {success ? <p className='success'>{success}</p> : ""}
             </div>
-            {title ? <Button type="submit" text="ADD" /> : ""}{/* Comprobamos que si title es decir que el campo a rellenar esta vacío, pues no muestra el boton y cuando haya texto lo muestra */}
-            {/*También podría hacerse así: {title && <Button type="submit" text="ADD" />} */}
+            {title ? (<Button type="submit" text={taskToEdit ? "EDIT" : "ADD"} />) : ""}{/* Comprobamos que si title es decir que el campo a rellenar esta vacío, pues no muestra el boton y cuando haya texto lo muestra. Y ese botón dirá EDIT si estoy editando, o ADD si estoy creando*/}
         </form>
     );
 };
