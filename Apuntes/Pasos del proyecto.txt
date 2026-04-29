@@ -1,0 +1,76 @@
+1- Comandos para la instalación:
+
+    npm create vite@latest todo-list-react -- --template react -> Genera automáticamente un proyecto React con Vite
+    cd todo-list-react -> Te mueves al proyecto recién creado
+    npm install -> Instala todo lo que Vite y React necesitan
+    npm install uuid -> Lo usaremos para generar IDs únicas en cada tarea
+    npm run dev -> Arranca la app en desarrollo
+
+2-  Nada más crear el proyecto, haz una limpieza inicial:
+
+        src/App.jsx
+
+            déjalo así:
+
+            function App() {
+            return <h1>TODO List</h1>;
+            }
+
+            export default App;
+        
+        src/main.jsx
+
+            déjalo como viene (normalmente ya está bien).
+        
+        src/index.css
+
+            puedes limpiarlo y dejar algo simple:
+
+            body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            }
+
+3- Crea la precarga de tareas:
+
+    Ahora crea el archivo:
+
+        src/data/todos.js
+
+    Esto será nuestra “base de datos” inicial.
+
+4- Conecta esos datos con App:
+
+        App.jsx
+
+Y su responsabilidad será únicamente:
+
+importar el layout
+importar la app de tareas
+renderizar ambas
+
+5- Creamos TodoApp.jsx
+    Este componente va a ser el “cerebro” de la aplicación.
+    Primero vamos a construir solo su responsabilidad principal:
+
+        guardar tareas en estado
+        cargar tareas iniciales
+        pintarlas en pantalla
+
+        Solo:
+
+        crear estado
+        cargar datos
+        recorrer tareas
+
+        Mentalmente este componente hará esto:
+
+        1. importar useState
+        2. importar datos iniciales
+        3. guardar datos en estado
+        4. recorrer tareas con map()
+
+6- Creamos components/List.jsx
+
+7 Creamos components/Item.jsx
